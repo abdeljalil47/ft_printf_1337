@@ -1,40 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnbr_base.c                                   :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abdsebba <abdsebba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/18 20:02:59 by abdsebba          #+#    #+#             */
-/*   Updated: 2024/11/22 20:51:05 by abdsebba         ###   ########.fr       */
+/*   Created: 2024/11/18 17:11:19 by abdsebba          #+#    #+#             */
+/*   Updated: 2024/11/21 23:06:54 by abdsebba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static size_t	ft_strlen(const char *s)
+void	ft_putstr(char *str, size_t *size)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
-	while (s[i])
-		i++;
-	return (i);
-}
-
-void	ft_putnbr_base(long nbr, const char *base, size_t *size)
-{
-	long	size_base;
-
-	size_base = ft_strlen(base);
-	if (nbr < 0)
+	if (str == NULL)
 	{
-		ft_putchar('-', size);
-		nbr = -nbr;
+		write(1, "(null)", 6);
+		(*size) += 6;
+		return ;
 	}
-	if (nbr >= size_base)
+	else
 	{
-		ft_putnbr_base(nbr / size_base, base, size);
+		while (str[i])
+		{
+			write(1, &str[i], 1);
+			(*size)++;
+			i++;
+		}
 	}
-	ft_putchar(base[nbr % size_base], size);
 }

@@ -1,70 +1,74 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: abdsebba <abdsebba@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/21 23:41:45 by abdsebba          #+#    #+#             */
+/*   Updated: 2024/11/25 18:28:01 by abdsebba         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_printf.h"
 
-int ft_printf(const char *format, ...);
-void ft_print_all(va_list *args, const char frm, size_t *out_chr);
-
-void ft_print_all(va_list *args, const char frm, size_t *out_chr)
+static void	ft_print_format(va_list *args, char frm, size_t *size)
 {
-    va_list dest;
-
-    va_copy(dest, *args);
-    if (frm == 'c')
-    {
-        ft_single_print(va_arg(*args, int), out_chr);
-    }
-    else if (frm == 's')
-    {
-        ft_str_print(va_arg(*args, char *), out_chr);
-    }
-    else if (frm == 'i' || frm == 'd')
-    {
-        ft_putnbr_base(va_arg(*args, int), "0123456789", out_chr);
-    }
-    else if (frm == 'p')
-    {
-        ft_str_print("0x", out_chr);
-        ft_putnbr_base(va_arg(*args, unsigned long long), "0123456789ABCDEF", out_chr);
-    }
-    else if (frm == 'x')
-    {
-        ft_putnbr_base(va_arg(*args, unsigned int), "0123456789abcdef", out_chr);
-    }
-    else if (frm == 'X')
-    {
-        ft_putnbr_base(va_arg(*args, unsigned int), "0123456789ABCDEF", out_chr);
-    }
-    else if (frm == 'u')
-    {
-        ft_print_unsigned((long)va_arg(*args, unsigned int), "0123456789", out_chr);
-    }
+	if (frm == 'c')
+		ft_putchar(va_arg(*args, int), size);
+	else if (frm == 's')
+		ft_putstr(va_arg(*args, char *), size);
+	else if (frm == 'd' || frm == 'i')
+		ft_putnbr_base(va_arg(*args, int), "0123456789", size);
+	else if (frm == 'x')
+		ft_putnbr_base(va_arg(*args, unsigned int), "0123456789abcdef", size);
+	else if (frm == 'X')
+		ft_putnbr_base(va_arg(*args, unsigned int), "0123456789ABCDEF", size);
+	else if (frm == 'p')
+	{
+		ft_putstr("0x", size);
+		ft_putnbr_p(va_arg(*args, unsigned long), "0123456789abcdef", size);
+	}
+	else if (frm == 'u')
+		ft_putnbr_unsigned(va_arg(*args, unsigned int), "0123456789", size);
+	else
+		ft_putchar(frm, size);
 }
 
-int ft_printf(const char *format, ...)
+int	ft_printf(const char *s, ...)
 {
-    va_list args;
-    size_t out_chr;
+	va_list	ap;
+	size_t	size;
 
-    out_chr = 0;
-    va_start(args, format);
-    while (*format != '\0')
-    {
-        if (*format != '%')
-        {
-            ft_single_print(*format, &out_chr);
-        }
-        else if (*format == '%' && *(format + 1) == '%')
-        {
-            format++;
-            ft_single_print(*format, &out_chr);
-        }
-        else
-        {
-            format++;
-            ft_print_all(&args, *format, &out_chr);
-        }
+	va_start(ap, s);
+	size = 0;
+	if (write(1, 0, 0) == -1)
+		return (-1);
+	while (*s)
+	{
+		if (*s != '%')
+			ft_putchar(*s, &size);
+		else if (*s == '%' && *(s + 1) == '%')
+			ft_putchar(*s++, &size);
+		else
+		{
+			if (*++s == '\0')
+				break ;
+			ft_print_format(&ap, *s, &size);
+		}
+		s++;
+	}
+	va_end(ap);
+	return (size);
+}
+#include <stdio.h>
+int main()
+{
+	char *c ;
+	int i = ft_printf("%c   %s    %p    %d    %i     %u      %x    %X    %%  kjfifg8giuwgf\n",'c',"ggggggggg",c,1245,1234,-7845,1234,1234);
+	ft_printf("%d \n",i);
+	ft_printf("------------------------------------------------------------------------------------------------------------------------------------\n");
 
-        format++;
-    }
-    va_end(args);
-    return out_chr;
+	int s = printf("%c   %s    %p    %d    %i     %u      %x    %X    %%  kjfifg8giuwgf\n",'c',"ggggggggg",c,1245,1234,-7845,1234,1234);
+	ft_printf("%d",s);
 }
